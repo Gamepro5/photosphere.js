@@ -2,7 +2,7 @@
 //created by Gamepro5, permission required to use.
 // depends on three.js
 
-function LoadPhotosphere(path, canvasID) {
+function LoadPhotosphere(equirectangularImagePath, canvasID) {
   this.canvas = document.querySelector('#' + canvasID); // what id the canvas tag needs to have for it to append it to
   this.renderer = new THREE.WebGLRenderer({canvas: this.canvas});
 	this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -20,7 +20,7 @@ function LoadPhotosphere(path, canvasID) {
   this.geometry.position = new THREE.Vector3( 0, 0, 0 );
 	// invert the geometry on the x-axis so that all of the faces point inward
 	this.geometry.scale( - 1, 1, 1 );
-	this.texture = new THREE.TextureLoader().load( path );
+	this.texture = new THREE.TextureLoader().load( equirectangularImagePath );
 	this.material = new THREE.MeshBasicMaterial( { map: this.texture } );
 	this.mesh = new THREE.Mesh( this.geometry, this.material );
 	this.scene.add( this.mesh );

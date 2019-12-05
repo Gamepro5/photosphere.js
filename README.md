@@ -5,7 +5,7 @@ A WebGL library for displaying photospheres in a canvas.
 You use your mouse to turn your head just like in a first person shooter, and while holding down shift, clicking the plus key will zoom, minus will zoom out, and zero will set it back to default zoom.
 
 # How to use
-You can use this library by calling the [three.js](https://threejs.org/) library and then calling this library. Then create a canvas.
+You can use this library by linking the [three.js](https://threejs.org/) library and then linking this library. Then create a canvas.
 ```html
 <canvas id="photosphere"></canvas>
 ```

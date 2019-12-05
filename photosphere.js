@@ -26,7 +26,7 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
 	this.scene.add( this.mesh );
 
   document.addEventListener('keydown', (event) => {
-    console.log(event);
+
       switch (event.key) {
           case '+':
               this.plusPressed = true;
@@ -96,9 +96,7 @@ let instance = this;
       instance.camera.fov = instance.camera.fov + direction;
       instance.camera.updateProjectionMatrix();
     } else {
-      console.log(instance.plusPressed);
       if (instance.plusPressed) {
-        console.log('e');
         if (instance.camera.fov === 0) {
           instance.camera.fov = 1;
           instance.camera.updateProjectionMatrix();

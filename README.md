@@ -23,3 +23,6 @@ new LoadPhotosphere(equirectangularImagePath, canvasID)
 <script>new LoadPhotosphere('/images/photospheres/the_mineshaft_entrance.jpg', 'photosphere2')</script> <!---js for the second photosphere--->
 ```
 Live examples [here](https://gamepro5.github.io/virtual_reality).
+
+# Download
+I like to keep this nice and simple, so just copy pase [this code](https://github.com/Gamepro5/photosphere.js/blob/master/photosphere.js) into a new JavaScript file called `photosphere.js`.

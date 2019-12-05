@@ -7,7 +7,7 @@ You use your mouse to turn your head just like in a first person shooter, and wh
 # How to use
 You can use this library by linking the [three.js](https://threejs.org/) library and then linking this library. Then create a canvas.
 ```html
-<canvas id="canvasID">Maybe put an error here? It will get overwritten by the canvas once it loads.</canvas>
+<canvas id="canvasID">Maybe put an error message here? It will get overwritten by the canvas once it loads.</canvas>
 ```
 Then use the following function:
 ```js

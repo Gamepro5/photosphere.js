@@ -7,7 +7,7 @@ You use your mouse to turn your head just like in a first person shooter, and wh
 # How to use
 You can use this library by linking the [three.js](https://threejs.org/) library and then linking this library. Then create a canvas.
 ```html
-<canvas id="photosphere"></canvas>
+<canvas id="canvasID"></canvas>
 ```
 Then use the following function:
 ```js

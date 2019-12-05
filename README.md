@@ -22,3 +22,4 @@ new LoadPhotosphere(equirectangularImagePath, canvasID)
 <script>new LoadPhotosphere('/images/photospheres/the_hike_on_which_we_got_lost.jpg', 'photosphere')</script> <!---js for the first photosphere--->
 <script>new LoadPhotosphere('/images/photospheres/the_mineshaft_entrance.jpg', 'photosphere2')</script> <!---js for the second photosphere--->
 ```
+Live examples [here](https://gamepro5.github.io/virtual_reality).

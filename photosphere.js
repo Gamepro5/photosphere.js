@@ -24,6 +24,15 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
 	this.material = new THREE.MeshBasicMaterial( { map: this.texture } );
 	this.mesh = new THREE.Mesh( this.geometry, this.material );
 	this.scene.add( this.mesh );
+  document.addEventListener('touchstart', (event) => {
+    this.touchDevice = true;
+  });
+
+  document.addEventListener('touchmove', (event) => {
+    this.touchDevice = true;
+    this.mouseMoveX = event.targetTouches[0].pageX;
+    this.mouseMoveY = event.targetTouches[0].pageY;
+  });
 
   document.addEventListener('keydown', (event) => {
 
@@ -68,14 +77,20 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
       else if (this.camera.rotation.x < -Math.PI / 2) this.camera.rotation.x = -Math.PI / 2;
 
   }
-
+  let oldMouseEvent;
+  let mouseMoved;
+  this.mouseMoveX = 0;
+  this.mouseMoveY = 0;
   this.canvas.addEventListener('mousemove', (event) => {
-    if (document.pointerLockElement || document.pointerLockElement === this.canvas) {
-    this.camera.rotation.y -= event.movementX / 700;
-    this.camera.rotation.x -= event.movementY / 700;
-    if (this.camera.rotation.x > Math.PI / 2) this.camera.rotation.x = Math.PI / 2;
-    else if (this.camera.rotation.x < -Math.PI / 2) this.camera.rotation.x = -Math.PI / 2;
-    };
+    this.mouseX = event.movementX;
+    this.mouseY = event.movementY;
+    if ((oldMouseEvent === undefined || (event.screenX - oldMouseEvent.movementX === 0)) && (oldMouseEvent === undefined || (event.screenY - oldMouseEvent.screenY === 0))) {
+    mouseMoved = true;
+    oldMouseEvent = event;
+  } else {
+    mouseMoved = false;
+  };
+  oldMouseEvent = event;
   });
 //end of from the Duel Cubes engine :)
 let direction = 1;
@@ -96,6 +111,14 @@ let instance = this;
       instance.camera.fov = instance.camera.fov + direction;
       instance.camera.updateProjectionMatrix();
     } else {
+      if (mouseMoved) {
+        instance.camera.rotation.y -= instance.mouseMoveX / 700;
+        instance.camera.rotation.x -= instance.mouseMoveY / 700;
+        if (instance.camera.rotation.x > Math.PI / 2) instance.camera.rotation.x = Math.PI / 2;
+        else if (instance.camera.rotation.x < -Math.PI / 2) instance.camera.rotation.x = -Math.PI / 2;
+        mouseMoved = false;
+      };
+
       if (instance.plusPressed) {
         if (instance.camera.fov === 0) {
           instance.camera.fov = 1;

@@ -82,11 +82,10 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
   this.mouseMoveX = 0;
   this.mouseMoveY = 0;
   this.canvas.addEventListener('mousemove', (event) => {
-    this.mouseX = event.movementX;
-    this.mouseY = event.movementY;
-    if ((oldMouseEvent === undefined || (event.screenX - oldMouseEvent.movementX === 0)) && (oldMouseEvent === undefined || (event.screenY - oldMouseEvent.screenY === 0))) {
+    this.mouseMoveX = event.movementX;
+    this.mouseMoveY = event.movementY;
+    if ((oldMouseEvent === undefined || (event.screenX - oldMouseEvent.screenX === 0)) && (oldMouseEvent === undefined || (event.screenY - oldMouseEvent.screenY === 0))) {
     mouseMoved = true;
-    oldMouseEvent = event;
   } else {
     mouseMoved = false;
   };

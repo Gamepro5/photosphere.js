@@ -1,6 +1,10 @@
 'use strict';
-//created by Gamepro5, permission required to use.
-// depends on three.js
+// Created by Gamepro5 @ https://gamepro5.github.io
+// Depends on three.js
+
+function isTouchDevice() {
+  return 'ontouchstart' in document.documentElement;
+};
 
 function LoadPhotosphere(equirectangularImagePath, canvasID) {
   this.canvas = document.querySelector('#' + canvasID); // what id the canvas tag needs to have for it to append it to
@@ -24,14 +28,41 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
 	this.material = new THREE.MeshBasicMaterial( { map: this.texture } );
 	this.mesh = new THREE.Mesh( this.geometry, this.material );
 	this.scene.add( this.mesh );
+
+  if (isTouchDevice()) {
+    this.touchDevice = true;
+  } else {
+    this.touchDevice = false;
+  };
+
+  let oldTouchMoveEvent;
+
   document.addEventListener('touchstart', (event) => {
     this.touchDevice = true;
+    this.touchDown = true;
+    this.fingerMoveX = 0;
+    this.fingerMoveY = 0;
+  });
+  document.addEventListener('touchend', (event) => {
+    this.touchDown = false;
+    oldTouchMoveEvent = undefined;
   });
 
+
   document.addEventListener('touchmove', (event) => {
-    this.touchDevice = true;
-    this.mouseMoveX = event.targetTouches[0].pageX;
-    this.mouseMoveY = event.targetTouches[0].pageY;
+    if (oldTouchMoveEvent !== undefined) {
+      this.fingerMoveX = (event.targetTouches[0].pageX - oldTouchMoveEvent.targetTouches[0].pageX);
+      this.fingerMoveY = (event.targetTouches[0].pageY - oldTouchMoveEvent.targetTouches[0].pageY);
+    } else {
+      this.fingerMoveX = 0;
+      this.fingerMoveY = 0;
+    };
+    oldTouchMoveEvent = event;
+    if (((oldMouseEvent === undefined) || (event.targetTouches[0].pageX - oldTouchMoveEvent.targetTouches[0].pageX === 0)) && ((oldMouseEvent === undefined) || (event.targetTouches[0].pageY - oldTouchMoveEvent.targetTouches[0].pageY === 0))) {
+      this.fingerMoved = true;
+    } else {
+      this.fingerMoved = false;
+    };
   });
 
   document.addEventListener('keydown', (event) => {
@@ -67,7 +98,9 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
   });
 
 //from the Duel Cubes engine
+let selectedCanvas;
   this.canvas.onclick = () => {
+    if (this.touchDevice === false) {
       if (!document.pointerLockElement || document.pointerLockElement !== this.canvas) {
         this.camera.fov = 50;
         this.camera.updateProjectionMatrix();
@@ -75,8 +108,16 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
       this.canvas.requestPointerLock();
       if (this.camera.rotation.x > Math.PI / 2) this.camera.rotation.x = Math.PI / 2;
       else if (this.camera.rotation.x < -Math.PI / 2) this.camera.rotation.x = -Math.PI / 2;
-
-  }
+    } else {
+      if (!selectedCanvas || selectedCanvas !== this.canvas) {
+        this.camera.fov = 50;
+        this.camera.updateProjectionMatrix();
+        selectedCanvas = this.canvas;
+      };
+      if (this.camera.rotation.x > Math.PI / 2) this.camera.rotation.x = Math.PI / 2;
+      else if (this.camera.rotation.x < -Math.PI / 2) this.camera.rotation.x = -Math.PI / 2;
+    };
+  };
   let oldMouseEvent;
   let mouseMoved;
   this.mouseMoveX = 0;
@@ -84,7 +125,7 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
   this.canvas.addEventListener('mousemove', (event) => {
     this.mouseMoveX = event.movementX;
     this.mouseMoveY = event.movementY;
-    if ((oldMouseEvent === undefined || (event.screenX - oldMouseEvent.screenX === 0)) && (oldMouseEvent === undefined || (event.screenY - oldMouseEvent.screenY === 0))) {
+    if ((oldMouseEvent === undefined || (event.screenX - oldMouseEvent.screenX === 0)) && (oldMouseEvent === undefined || event.screenY - oldMouseEvent.screenY === 0)) {
     mouseMoved = true;
   } else {
     mouseMoved = false;
@@ -94,51 +135,62 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
 //end of from the Duel Cubes engine :)
 let direction = 1;
 let instance = this;
-  function render() {
-    if (!document.pointerLockElement || document.pointerLockElement !== instance.canvas) {
-      instance.camera.rotation.x += 0.01;
-      instance.camera.rotation.y += 0.01;
-      if (instance.camera.fov <= 1) {
-        instance.camera.fov = 1;
-        instance.camera.updateProjectionMatrix();
-        direction = 1;
-      } else if (instance.camera.fov >= 179) {
-        instance.camera.fov = 179;
-        instance.camera.updateProjectionMatrix();
-        direction = -1;
-      };
-      instance.camera.fov = instance.camera.fov + direction;
-      instance.camera.updateProjectionMatrix();
-    } else {
-      if (mouseMoved) {
-        instance.camera.rotation.y -= instance.mouseMoveX / 700;
-        instance.camera.rotation.x -= instance.mouseMoveY / 700;
-        if (instance.camera.rotation.x > Math.PI / 2) instance.camera.rotation.x = Math.PI / 2;
-        else if (instance.camera.rotation.x < -Math.PI / 2) instance.camera.rotation.x = -Math.PI / 2;
-        mouseMoved = false;
-      };
 
-      if (instance.plusPressed) {
-        if (instance.camera.fov === 0) {
+  function render() {
+    if (!instance.touchDevice) {
+      if (!document.pointerLockElement || document.pointerLockElement !== instance.canvas) {
+        instance.camera.rotation.x += 0.01;
+        instance.camera.rotation.y += 0.01;
+        if (instance.camera.fov <= 1) {
           instance.camera.fov = 1;
           instance.camera.updateProjectionMatrix();
-        } else if (instance.camera.fov > 1) {
-          instance.camera.fov -= 1;
+          direction = 1;
+        } else if (instance.camera.fov >= 179) {
+          instance.camera.fov = 179;
+          instance.camera.updateProjectionMatrix();
+          direction = -1;
+        };
+        instance.camera.fov = instance.camera.fov + direction;
+        instance.camera.updateProjectionMatrix();
+      } else {
+        if (mouseMoved) {
+          instance.camera.rotation.y -= instance.mouseMoveX / 700;
+          instance.camera.rotation.x -= instance.mouseMoveY / 700;
+          if (instance.camera.rotation.x > Math.PI / 2) instance.camera.rotation.x = Math.PI / 2;
+          else if (instance.camera.rotation.x < -Math.PI / 2) instance.camera.rotation.x = -Math.PI / 2;
+          mouseMoved = false;
+        };
+
+        if (instance.plusPressed) {
+          if (instance.camera.fov === 0) {
+            instance.camera.fov = 1;
+            instance.camera.updateProjectionMatrix();
+          } else if (instance.camera.fov > 1) {
+            instance.camera.fov -= 1;
+            instance.camera.updateProjectionMatrix();
+          };
+        };
+        if (instance.underscorePressed) {
+           if (instance.camera.fov === 180) {
+             instance.camera.fov = 179;
+             instance.camera.updateProjectionMatrix();
+           } else if (instance.camera.fov < 178) {
+             instance.camera.fov += 1;
+             instance.camera.updateProjectionMatrix();
+           };
+        };
+        if (instance.closeingParenthesePressed) {
+          instance.camera.fov = 50;
           instance.camera.updateProjectionMatrix();
         };
       };
-      if (instance.underscorePressed) {
-         if (instance.camera.fov === 180) {
-           instance.camera.fov = 179;
-           instance.camera.updateProjectionMatrix();
-         } else if (instance.camera.fov < 178) {
-           instance.camera.fov += 1;
-           instance.camera.updateProjectionMatrix();
-         };
-      };
-      if (instance.closeingParenthesePressed) {
-        instance.camera.fov = 50;
-        instance.camera.updateProjectionMatrix();
+    } else {
+      if (instance.touchDown) {
+        if (instance.fingerMoved) {
+          instance.camera.rotation.y -= instance.fingerMoveX / 250;
+          instance.camera.rotation.x -= instance.fingerMoveY / 250;
+          instance.fingerMoved = false;
+        };
       };
     };
 

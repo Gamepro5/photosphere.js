@@ -29,6 +29,9 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
 	this.mesh = new THREE.Mesh( this.geometry, this.material );
 	this.scene.add( this.mesh );
 
+  this.stopPan = false;
+  let selectedCanvas;
+
   if (isTouchDevice()) {
     this.touchDevice = true;
   } else {
@@ -36,12 +39,19 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
   };
 
   let oldTouchMoveEvent;
+  let fingerMoved = false;
 
   document.addEventListener('touchstart', (event) => {
     this.touchDevice = true;
+    this.stopPan = true;
     this.touchDown = true;
     this.fingerMoveX = 0;
     this.fingerMoveY = 0;
+    if (!selectedCanvas || selectedCanvas !== this.canvas) {
+      this.camera.fov = 50;
+      this.camera.updateProjectionMatrix();
+      selectedCanvas = this.canvas;
+    };
   });
   document.addEventListener('touchend', (event) => {
     this.touchDown = false;
@@ -59,9 +69,9 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
     };
     oldTouchMoveEvent = event;
     if (((oldMouseEvent === undefined) || (event.targetTouches[0].pageX - oldTouchMoveEvent.targetTouches[0].pageX === 0)) && ((oldMouseEvent === undefined) || (event.targetTouches[0].pageY - oldTouchMoveEvent.targetTouches[0].pageY === 0))) {
-      this.fingerMoved = true;
+      fingerMoved = true;
     } else {
-      this.fingerMoved = false;
+      fingerMoved = false;
     };
   });
 
@@ -98,7 +108,6 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
   });
 
 //from the Duel Cubes engine
-let selectedCanvas;
   this.canvas.onclick = () => {
     if (this.touchDevice === false) {
       if (!document.pointerLockElement || document.pointerLockElement !== this.canvas) {
@@ -130,13 +139,15 @@ let selectedCanvas;
   } else {
     mouseMoved = false;
   };
-  oldMouseEvent = event;
+    oldMouseEvent = event;
   });
 //end of from the Duel Cubes engine :)
 let direction = 1;
 let instance = this;
 
   function render() {
+    requestAnimationFrame(render);
+
     if (!instance.touchDevice) {
       if (!document.pointerLockElement || document.pointerLockElement !== instance.canvas) {
         instance.camera.rotation.x += 0.01;
@@ -185,18 +196,33 @@ let instance = this;
         };
       };
     } else {
-      if (instance.touchDown) {
-        if (instance.fingerMoved) {
-          instance.camera.rotation.y -= instance.fingerMoveX / 250;
-          instance.camera.rotation.x -= instance.fingerMoveY / 250;
-          instance.fingerMoved = false;
+      if (instance.stopPan) {
+        if (fingerMoved) {
+            instance.camera.rotation.y += instance.fingerMoveX / 250;
+            instance.camera.rotation.x += instance.fingerMoveY / 250;
+            if (instance.camera.rotation.x > Math.PI / 2) instance.camera.rotation.x = Math.PI / 2;
+            else if (instance.camera.rotation.x < -Math.PI / 2) instance.camera.rotation.x = -Math.PI / 2;
+            fingerMoved = false;
+        };
+      } else {
+          instance.camera.rotation.x += 0.01;
+          instance.camera.rotation.y += 0.01;
+          if (instance.camera.fov <= 1) {
+            instance.camera.fov = 1;
+            instance.camera.updateProjectionMatrix();
+            direction = 1;
+          } else if (instance.camera.fov >= 179) {
+            instance.camera.fov = 179;
+            instance.camera.updateProjectionMatrix();
+            direction = -1;
+          };
+          instance.camera.fov = instance.camera.fov + direction;
+          instance.camera.updateProjectionMatrix();
         };
       };
-    };
 
     instance.renderer.render(instance.scene, instance.camera);
 
-    requestAnimationFrame(render);
   };
   requestAnimationFrame(render);
 

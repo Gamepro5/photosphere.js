@@ -7,7 +7,9 @@ function isTouchDevice() {
 };
 
 function LoadPhotosphere(equirectangularImagePath, canvasID) {
+
   this.canvas = document.querySelector('#' + canvasID); // what id the canvas tag needs to have for it to append it to
+  this.canvas.style.touchAction = "none";
   this.renderer = new THREE.WebGLRenderer({canvas: this.canvas});
 	this.renderer.setPixelRatio( window.devicePixelRatio );
   this.rect = this.canvas.getBoundingClientRect();
@@ -32,80 +34,109 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
   this.stopPan = false;
   let selectedCanvas;
 
+  let instance = this;
+
   if (isTouchDevice()) {
     this.touchDevice = true;
   } else {
     this.touchDevice = false;
   };
 
-  let oldTouchMoveEvent;
-  let fingerMoved = false;
 
-  document.addEventListener('touchstart', (event) => {
-    this.touchDevice = true;
-    this.stopPan = true;
-    this.touchDown = true;
-    this.fingerMoveX = 0;
-    this.fingerMoveY = 0;
-    if (!selectedCanvas || selectedCanvas !== this.canvas) {
-      this.camera.fov = 50;
-      this.camera.updateProjectionMatrix();
-      selectedCanvas = this.canvas;
+  let pointerMoved = false;
+  this.pointerMoveX = 0;
+  this.pointerMoveY = 0;
+
+  function pointerdownEvent(that, event) {
+    that.pointerDown = true;
+    if (that.touchDevice === true) {
+      that.stopPan = true;
+      if (!selectedCanvas || selectedCanvas !== that.canvas) {
+        that.camera.fov = 50;
+        that.camera.updateProjectionMatrix();
+        selectedCanvas = that.canvas;
+      };
     };
-  });
-  document.addEventListener('touchend', (event) => {
-    this.touchDown = false;
-    oldTouchMoveEvent = undefined;
-  });
+  };
+  const pointerdownHandleEvent = (event) => {
+    pointerdownEvent(this, event);
+  };
+  document.addEventListener('pointerdown', pointerdownHandleEvent);
 
 
-  document.addEventListener('touchmove', (event) => {
-    if (oldTouchMoveEvent !== undefined) {
-      this.fingerMoveX = (event.targetTouches[0].pageX - oldTouchMoveEvent.targetTouches[0].pageX);
-      this.fingerMoveY = (event.targetTouches[0].pageY - oldTouchMoveEvent.targetTouches[0].pageY);
+  function pointermoveEvent(that, event) {
+    if (that.touchDevice === true) {
+      that.pointerMoveX = event.movementX;
+      that.pointerMoveY = event.movementY;
+      if ((event.movementX !== undefined || event.movementX !== 0) && (event.movementY !== undefined || event.movementY !== 0)) {
+        pointerMoved = true;
+      } else {
+        pointerMoved = false;
+      };
     } else {
-      this.fingerMoveX = 0;
-      this.fingerMoveY = 0;
+      that.pointerMoveX = event.movementX;
+      that.pointerMoveY = event.movementY;
+      if ((event.movementX !== undefined || event.movementX !== 0) && (event.movementY !== undefined || event.movementY !== 0)) {
+        pointerMoved = true;
+      } else {
+        pointerMoved = false;
+      };
     };
-    oldTouchMoveEvent = event;
-    if (((oldMouseEvent === undefined) || (event.targetTouches[0].pageX - oldTouchMoveEvent.targetTouches[0].pageX === 0)) && ((oldMouseEvent === undefined) || (event.targetTouches[0].pageY - oldTouchMoveEvent.targetTouches[0].pageY === 0))) {
-      fingerMoved = true;
-    } else {
-      fingerMoved = false;
+  };
+  const pointermoveHandleEvent = (event) => {
+    pointermoveEvent(this, event);
+  };
+  document.addEventListener('pointermove', pointermoveHandleEvent);
+
+
+  function pointerupEvent(that, event) {
+    that.pointerDown = false;
+  };
+  const pointerupHandleEvent = (event) => {
+    pointerupEvent(this, event);
+  };
+  document.addEventListener('pointerup', pointerupHandleEvent);
+
+
+  function keydownEvent(that, event) {
+    switch (event.key) {
+        case '+':
+            that.plusPressed = true;
+        break;
+        case '_':
+            that.underscorePressed = true;
+        break;
+        case ')':
+            that.closeingParenthesePressed = true;
+        break;
     };
-  });
+  };
+  const keydownHandleEvent = (event) => {
+    keydownEvent(this, event);
+  };
+  document.addEventListener('keydown', keydownHandleEvent);
 
-  document.addEventListener('keydown', (event) => {
 
-      switch (event.key) {
-          case '+':
-              this.plusPressed = true;
-          break;
-          case '_':
-              this.underscorePressed = true;
-          break;
-          case ')':
-              this.closeingParenthesePressed = true;
-          break;
-      }
-  });
-  document.addEventListener('keyup', (event) => {
-
-      switch (event.key) {
-          case '+':
-          case '=':
-              this.plusPressed = false;
-          break;
-          case '_':
-          case '-':
-              this.underscorePressed = false;
-          break;
-          case ')':
-          case '0':
-              this.closeingParenthesePressed = false;
-          break;
-      }
-  });
+  function keyupEvent(that, event) {
+    switch (event.key) {
+        case '+':
+        case '=':
+            that.plusPressed = false;
+        break;
+        case '_':
+        case '-':
+            that.underscorePressed = false;
+        break;
+        case ')':
+        case '0':
+            that.closeingParenthesePressed = false;
+        break;
+    };
+  };
+  const keyupHandleEvent = (event) => {
+    keyupEvent(this, event);
+  };
+  document.addEventListener('keyup', keyupHandleEvent);
 
 //from the Duel Cubes engine
   this.canvas.onclick = () => {
@@ -127,26 +158,12 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
       else if (this.camera.rotation.x < -Math.PI / 2) this.camera.rotation.x = -Math.PI / 2;
     };
   };
-  let oldMouseEvent;
-  let mouseMoved;
-  this.mouseMoveX = 0;
-  this.mouseMoveY = 0;
-  this.canvas.addEventListener('mousemove', (event) => {
-    this.mouseMoveX = event.movementX;
-    this.mouseMoveY = event.movementY;
-    if ((oldMouseEvent === undefined || (event.screenX - oldMouseEvent.screenX === 0)) && (oldMouseEvent === undefined || event.screenY - oldMouseEvent.screenY === 0)) {
-    mouseMoved = true;
-  } else {
-    mouseMoved = false;
-  };
-    oldMouseEvent = event;
-  });
 //end of from the Duel Cubes engine :)
-let direction = 1;
-let instance = this;
 
+let direction = 1;
+let lastAnimationID;
   function render() {
-    requestAnimationFrame(render);
+    lastAnimationID = window.requestAnimationFrame(render);
 
     if (!instance.touchDevice) {
       if (!document.pointerLockElement || document.pointerLockElement !== instance.canvas) {
@@ -164,12 +181,12 @@ let instance = this;
         instance.camera.fov = instance.camera.fov + direction;
         instance.camera.updateProjectionMatrix();
       } else {
-        if (mouseMoved) {
-          instance.camera.rotation.y -= instance.mouseMoveX / 700;
-          instance.camera.rotation.x -= instance.mouseMoveY / 700;
+        if (pointerMoved) {
+          instance.camera.rotation.y -= instance.pointerMoveX / 700;
+          instance.camera.rotation.x -= instance.pointerMoveY / 700;
           if (instance.camera.rotation.x > Math.PI / 2) instance.camera.rotation.x = Math.PI / 2;
           else if (instance.camera.rotation.x < -Math.PI / 2) instance.camera.rotation.x = -Math.PI / 2;
-          mouseMoved = false;
+          pointerMoved = false;
         };
 
         if (instance.plusPressed) {
@@ -197,12 +214,12 @@ let instance = this;
       };
     } else {
       if (instance.stopPan) {
-        if (fingerMoved) {
-            instance.camera.rotation.y += instance.fingerMoveX / 250;
-            instance.camera.rotation.x += instance.fingerMoveY / 250;
+        if (pointerMoved) {
+            instance.camera.rotation.y += instance.pointerMoveX / 250;
+            instance.camera.rotation.x += instance.pointerMoveY / 250;
             if (instance.camera.rotation.x > Math.PI / 2) instance.camera.rotation.x = Math.PI / 2;
             else if (instance.camera.rotation.x < -Math.PI / 2) instance.camera.rotation.x = -Math.PI / 2;
-            fingerMoved = false;
+            pointerMoved = false;
         };
       } else {
           instance.camera.rotation.x += 0.01;
@@ -224,6 +241,21 @@ let instance = this;
     instance.renderer.render(instance.scene, instance.camera);
 
   };
-  requestAnimationFrame(render);
+  window.requestAnimationFrame(render);
 
+  this.terminate = function() {
+    window.cancelAnimationFrame(lastAnimationID);
+    document.removeEventListener('pointerdown', pointerdownHandleEvent);
+    document.removeEventListener('pointermove', pointermoveHandleEvent);
+    document.removeEventListener('pointerup', pointerupHandleEvent);
+    document.removeEventListener('keydown', keydownHandleEvent);
+    document.removeEventListener('keyup', keyupHandleEvent);
+    instance.renderer.clear(true, true, true);
+    instance.renderer.dispose();
+    instance.geometry.dispose();
+  	instance.texture.dispose();
+  	instance.material.dispose();
+    instance.canvas.onclick = undefined;
+    //console.log('instance termination complete');
+  };
 };

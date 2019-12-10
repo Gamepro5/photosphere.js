@@ -11,8 +11,25 @@ You can use this library by linking the [three.js](https://threejs.org/) library
 ```
 Then use the following function:
 ```js
-new LoadPhotosphere(equirectangularImagePath, canvasID)
+new LoadPhotosphere(equirectangularImagePath, canvasID);
 ```
+It may be better practice to set the object created by the above function to a variable, that way you can accsess the objects methods.
+```js
+var photosphere = new LoadPhotosphere(equirectangularImagePath, canvasID);
+```
+# Methods
+```js
+photosphere.methodExample();
+```
+This library currently only has and needs only one method. This method is the terminate method. It properly disposes of everything initialised when you called `loadPhotosphere` by destroying all WebGL contexts, removing the instance's event listeners, and cancels the main loop (the requestAnimationFrame).
+```js
+photosphere.terminate();
+```
+You would then be left with an empty object. If you really have no mercy, you can simply remove that by running the following after the above.
+```js
+photosphere = undefined;
+```
+It's as if it never existed in the first place!
 # Example
 ```html
 <canvas id="photosphere"><div class="js_error"><b>ERROR:</b> JavaScript programs need JavaScript to be enabled to run. You shouldn't be surprised by this.</div></canvas> <!---canvas for the first photosphere--->
@@ -25,4 +42,4 @@ new LoadPhotosphere(equirectangularImagePath, canvasID)
 Live examples [here](https://gamepro5.github.io/virtual_reality).
 
 # Download
-I like to keep this nice and simple, so just copy pase [this code](https://github.com/Gamepro5/photosphere.js/blob/master/photosphere.js) into a new JavaScript file called `photosphere.js`.
+I like to keep this nice and simple, so just copy-paste [this code](https://github.com/Gamepro5/photosphere.js/blob/master/photosphere.js) into a new JavaScript file called `photosphere.js`.

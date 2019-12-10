@@ -36,8 +36,8 @@ It's as if it never existed in the first place!
 <canvas id="photosphere2"><div class="js_error"><b>ERROR:</b> JavaScript programs need JavaScript to be enabled to run. You shouldn't be surprised by this.</div></canvas> <!---canvas for the second photosphere--->
 
 <script src="/js/libraries/three.js"></script><script src="/js/photosphere.js"></script> <!---load libraries--->
-<script>new LoadPhotosphere('/images/photospheres/the_hike_on_which_we_got_lost.jpg', 'photosphere')</script> <!---js for the first photosphere--->
-<script>new LoadPhotosphere('/images/photospheres/the_mineshaft_entrance.jpg', 'photosphere2')</script> <!---js for the second photosphere--->
+<script>var photosphere = new LoadPhotosphere('/images/photospheres/the_hike_on_which_we_got_lost.jpg', 'photosphere')</script> <!---js for the first photosphere--->
+<script>var photosphere2 = new LoadPhotosphere('/images/photospheres/the_mineshaft_entrance.jpg', 'photosphere2')</script> <!---js for the second photosphere--->
 ```
 Live examples [here](https://gamepro5.github.io/virtual_reality).
 

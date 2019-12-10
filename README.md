@@ -21,7 +21,7 @@ var photosphere = new LoadPhotosphere(equirectangularImagePath, canvasID);
 ```js
 photosphere.methodExample();
 ```
-This library currently only has and needs only one method. This method is the terminate method. It properly disposes of everything initialised when you called `loadPhotosphere` by destroying all WebGL contexts, removing the instance's event listeners, and cancels the main loop (the requestAnimationFrame).
+This library currently only has and needs only one method. This method is the terminate method. It properly disposes of everything initialised when you called `LoadPhotosphere` by destroying all WebGL contexts, removing the instance's event listeners, and cancels the main loop (the requestAnimationFrame).
 ```js
 photosphere.terminate();
 ```

@@ -25,7 +25,7 @@ This library currently only has and needs only one method. This method is the te
 ```js
 photosphere.terminate();
 ```
-You would then be left with an empty object. If you really have no mercy, you can simply remove that by running the following after the above.
+Then empty the useless shell of an object.
 ```js
 photosphere = undefined;
 ```
@@ -43,3 +43,5 @@ Live examples [here](https://gamepro5.github.io/virtual_reality).
 
 # Download
 I like to keep this nice and simple, so just copy-paste [this code](https://github.com/Gamepro5/photosphere.js/blob/master/photosphere.js) into a new JavaScript file called `photosphere.js`.
+
+Alternatively, if you dont want to constantly keep it updated, you can just link it from the url https://gamepro5.github.io/photosphere.js/photosphere.js

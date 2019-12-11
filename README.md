@@ -43,5 +43,3 @@ Live examples [here](https://gamepro5.github.io/virtual_reality).
 
 # Download
 I like to keep this nice and simple, so just copy-paste [this code](https://github.com/Gamepro5/photosphere.js/blob/master/photosphere.js) into a new JavaScript file called `photosphere.js`.
-
-Alternatively, if you dont want to constantly keep it updated, you can just link it from the url https://gamepro5.github.io/photosphere.js/photosphere.js

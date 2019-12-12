@@ -46,8 +46,8 @@ It's as if it never existed in the first place!
 Live examples [here](https://gamepro5.github.io/virtual_reality).
 
 # Download
-I like to keep this nice and simple, so just copy-paste [this code](void) into a new JavaScript file called `photosphere.js`.
+I like to keep this nice and simple, so just copy-paste [this code](https://github.com/Gamepro5/photosphere.js/blob/master/build/photosphere.js) into a new JavaScript file called `photosphere.js`.
 
-The minimized file can be found [here](void) (better for performance).
+The minimized file can be found [here](https://github.com/Gamepro5/photosphere.js/blob/master/build/photosphere_min.js) (better for performance).
 
-Too lazy to download the three.js library? Just use my [standalone version](void) of photosphere.js where I include the three.js build it uses in the same file, all minimized, of course.
+Too lazy to download the three.js library? Just use my [standalone version](https://github.com/Gamepro5/photosphere.js/blob/master/build/photosphere_standalone.js) of photosphere.js where I include the three.js build it uses in the same file, all minimized, of course.

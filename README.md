@@ -15,7 +15,7 @@ new LoadPhotosphere(equirectangularImagePath, canvasID);
 ```
 It may be better practice to set the object created by the above function to a variable, that way you can accsess the objects methods.
 ```js
-var photosphere = new LoadPhotosphere(equirectangularImagePath, canvasID);
+photosphere = new LoadPhotosphere(equirectangularImagePath, canvasID);
 ```
 # Methods
 ```js
@@ -28,6 +28,10 @@ photosphere.terminate();
 Then empty the useless shell of an object.
 ```js
 photosphere = undefined;
+```
+Or if you didnt use 'let', 'const', or 'var' and just declared the variable "photosphere" as-is, you can delete it properly. (this is the recommended fancy way)
+```js
+delete window.photosphere;
 ```
 It's as if it never existed in the first place!
 # Example

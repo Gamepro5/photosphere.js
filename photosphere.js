@@ -42,7 +42,19 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
     this.touchDevice = false;
   };
 
+  window.addEventListener('resize', onWindowResize, false);
 
+function onWindowResize(){
+
+    instance.camera.aspect = instance.rect.width / instance.rect.height;
+    instance.camera.updateProjectionMatrix();
+
+    //instance.renderer.setSize(instance.rect.width, instance.rect.height, false);
+    //console.log(renderer.getboundignclientrect
+    instance.renderer.setPixelRatio( window.devicePixelRatio );
+
+};
+onWindowResize();
   let pointerMoved = false;
   this.pointerMoveX = 0;
   this.pointerMoveY = 0;
@@ -50,12 +62,25 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
   function pointerdownEvent(that, event) {
     that.pointerDown = true;
     if (that.touchDevice === true) {
-      that.stopPan = true;
-      if (!selectedCanvas || selectedCanvas !== that.canvas) {
-        that.camera.fov = 50;
-        that.camera.updateProjectionMatrix();
-        selectedCanvas = that.canvas;
+      //console.log(event.target + ', ' + that);
+      if (event.target === that.canvas) {
+        that.pointerDown = true;
+        that.stopPan = true;
+        if (!selectedCanvas || selectedCanvas !== that.canvas) {
+          that.camera.fov = 50;
+          that.camera.updateProjectionMatrix();
+          selectedCanvas = that.canvas;
+        };
+        if (that.camera.rotation.x > Math.PI / 2) that.camera.rotation.x = Math.PI / 2;
+        else if (that.camera.rotation.x < -Math.PI / 2) that.camera.rotation.x = -Math.PI / 2;
+        //console.log(that.pointerDown);
+      } else {
+        that.pointerDown = false;
+        that.stopPan = false;
+        selectedCanvas = undefined;
+        //console.log(that.pointerDown);
       };
+
     };
   };
   const pointerdownHandleEvent = (event) => {
@@ -66,12 +91,19 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
 
   function pointermoveEvent(that, event) {
     if (that.touchDevice === true) {
-      that.pointerMoveX = event.movementX;
-      that.pointerMoveY = event.movementY;
-      if ((event.movementX !== undefined || event.movementX !== 0) && (event.movementY !== undefined || event.movementY !== 0)) {
-        pointerMoved = true;
+      /*if (event.target === that.canvas) {
+        that.pointerDown = true;
       } else {
-        pointerMoved = false;
+        that.pointerDown = false;
+      };*/
+      if (that.pointerDown) {
+        that.pointerMoveX = event.movementX;
+        that.pointerMoveY = event.movementY;
+        if ((event.movementX !== undefined || event.movementX !== 0) && (event.movementY !== undefined || event.movementY !== 0)) {
+          pointerMoved = true;
+        } else {
+          pointerMoved = false;
+        };
       };
     } else {
       that.pointerMoveX = event.movementX;
@@ -148,21 +180,16 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
       this.canvas.requestPointerLock();
       if (this.camera.rotation.x > Math.PI / 2) this.camera.rotation.x = Math.PI / 2;
       else if (this.camera.rotation.x < -Math.PI / 2) this.camera.rotation.x = -Math.PI / 2;
-    } else {
-      if (!selectedCanvas || selectedCanvas !== this.canvas) {
-        this.camera.fov = 50;
-        this.camera.updateProjectionMatrix();
-        selectedCanvas = this.canvas;
-      };
-      if (this.camera.rotation.x > Math.PI / 2) this.camera.rotation.x = Math.PI / 2;
-      else if (this.camera.rotation.x < -Math.PI / 2) this.camera.rotation.x = -Math.PI / 2;
     };
   };
 //end of from the Duel Cubes engine :)
 
 let direction = 1;
 let lastAnimationID;
+let terminated = false;
+let stopAnimationFrame = false;
   function render() {
+    if (stopAnimationFrame) return;
     lastAnimationID = window.requestAnimationFrame(render);
 
     if (!instance.touchDevice) {
@@ -237,14 +264,19 @@ let lastAnimationID;
           instance.camera.updateProjectionMatrix();
         };
       };
-
+//console.log(instance.renderer.getContext().getExtension('WEBGL_lose_context'));
+  //if (terminated === false) {
     instance.renderer.render(instance.scene, instance.camera);
+  //};
 
   };
   window.requestAnimationFrame(render);
 
   this.terminate = function() {
-    window.cancelAnimationFrame(lastAnimationID);
+    //window.cancelAnimationFrame(lastAnimationID);
+    stopAnimationFrame = true;
+    instance.renderer.forceContextLoss();
+    instance.renderer.getContext().getExtension('WEBGL_lose_context').loseContext();
     document.removeEventListener('pointerdown', pointerdownHandleEvent);
     document.removeEventListener('pointermove', pointermoveHandleEvent);
     document.removeEventListener('pointerup', pointerupHandleEvent);
@@ -253,9 +285,11 @@ let lastAnimationID;
     instance.renderer.clear(true, true, true);
     instance.renderer.dispose();
     instance.geometry.dispose();
-  	instance.texture.dispose();
-  	instance.material.dispose();
+    instance.texture.dispose();
+    instance.material.dispose();
     instance.canvas.onclick = undefined;
+    terminated = true;
     //console.log('instance termination complete');
   };
+
 };

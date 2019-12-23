@@ -45,14 +45,11 @@ function LoadPhotosphere(equirectangularImagePath, canvasID) {
   window.addEventListener('resize', onWindowResize, false);
 
 function onWindowResize(){
-
     instance.camera.aspect = instance.rect.width / instance.rect.height;
     instance.camera.updateProjectionMatrix();
-
-    //instance.renderer.setSize(instance.rect.width, instance.rect.height, false);
-    //console.log(renderer.getboundignclientrect
     instance.renderer.setPixelRatio( window.devicePixelRatio );
-
+    instance.rect = instance.canvas.getBoundingClientRect();
+    instance.renderer.setSize(instance.rect.width, instance.rect.height, false);
 };
 onWindowResize();
   let pointerMoved = false;

@@ -43,11 +43,11 @@ It's as if it never existed in the first place!
 <script>photosphere = new LoadPhotosphere('/images/photospheres/the_hike_on_which_we_got_lost.jpg', 'photosphere')</script> <!---js for the first photosphere--->
 <script>photosphere2 = new LoadPhotosphere('/images/photospheres/the_mineshaft_entrance.jpg', 'photosphere2')</script> <!---js for the second photosphere--->
 ```
-Live examples [here](https://gamepro5.github.io/virtual_reality).
+Live examples [here](https://gamepro5.com/virtual_reality).
 
 # Download
-I like to keep this nice and simple, so just copy-paste [this code](https://github.com/Gamepro5/photosphere.js/blob/master/build/photosphere.js) into a new JavaScript file called `photosphere.js`.
+I like to keep this nice and simple, so just copy-paste [this code](/build/photosphere.js) into a new JavaScript file called `photosphere.js`.
 
-The minimized file can be found [here](https://github.com/Gamepro5/photosphere.js/blob/master/build/photosphere_min.js) (better for performance).
+The minimized file can be found [here](/build/photosphere_min.js) (better for performance).
 
-Too lazy to download the three.js library? Just use my [standalone version](https://github.com/Gamepro5/photosphere.js/blob/master/build/photosphere_standalone.js) of photosphere.js where I include the three.js build it uses in the same file, all minimized, of course.
+Too lazy to download the three.js library? Just use my [standalone version](/build/photosphere_standalone.js) of photosphere.js where I include the three.js build it uses in the same file, all minimized, of course.
